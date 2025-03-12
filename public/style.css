@@ -1,0 +1,565 @@
+/* Base styles */ 
+
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+} 
+
+:root { 
+    --primary-color: #4f46e5; 
+    --recieve-color: white;  /* สีเขียวสำหรับผู้รับ */ 
+    --admin-header-color:  #4A5568;   /* สีเทาสำหรับแอดมิน */ 
+    --reciever-header-color:  #6b7a8a; /* สีแดงสำหรับผู้ใช้คนอื่น */ 
+    --sender-header-color:   #5296ce ; /* สีม่วงสำหรับส่วนหัวของผู้ส่ง */ 
+    --secondary-color: #818cf8; 
+    --dark-bg: #1e293b; 
+    --light-bg: #f1f5f9; 
+    --text-light: #f8fafc; 
+    --text-dark: #334155; 
+    --sent-msg-bg: white;  /* เปลี่ยนสีพื้นหลังข้อความผู้ส่งเป็นสีขาว */ 
+    --received-msg-bg: var(--recieve-color); 
+    --border-radius: 12px; 
+} 
+
+ 
+
+ 
+
+body { 
+    background-color: var(--dark-bg); 
+    color: var(--text-light); 
+    font-size: 16px; 
+    line-height: 1.5; 
+} 
+
+ 
+
+main { 
+    height: auto; /* เปลี่ยนจาก 100vh ให้มันยืดหยุ่น */
+    min-height: 100vh; /* เพิ่ม min-height เพื่อให้เต็มหน้าจอ */
+    padding: 1rem;
+    display: flex;
+    flex-flow: column;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+ 
+
+/* Form styles */ 
+
+form { 
+    display: flex; 
+    justify-content: center; 
+    gap: 8px; 
+    margin-bottom: 12px; 
+} 
+
+ 
+
+.form-join { 
+    background-color: rgba(255, 255, 255, 0.1); 
+    padding: 16px; 
+    border-radius: var(--border-radius); 
+    margin-bottom: 16px; 
+} 
+
+ 
+
+.form-msg { 
+    margin-top: 16px; 
+    position: sticky; 
+    bottom: 0; 
+} 
+
+ 
+
+input { 
+    border-radius: var(--border-radius); 
+    padding: 12px 16px; 
+    border: none; 
+    flex-grow: 1; 
+    font-size: 1rem; 
+    background-color: rgba(255, 255, 255, 0.1); 
+    color: var(--text-light); 
+    transition: all 0.2s ease; 
+} 
+
+ 
+
+input::placeholder { 
+    color: rgba(255, 255, 255, 0.5); 
+} 
+
+ 
+
+input:focus { 
+    outline: none; 
+    background-color: rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 0 0 2px var(--secondary-color); 
+} 
+
+ 
+
+button { 
+    border-radius: var(--border-radius); 
+    padding: 12px 24px; 
+    border: none; 
+    background-color: var(--primary-color); 
+    color: white; 
+    cursor: pointer; 
+    font-size: 1rem; 
+    font-weight: 600; 
+    transition: all 0.2s ease; 
+} 
+
+ 
+
+button:hover { 
+    background-color: var(--secondary-color); 
+    transform: translateY(-2px); 
+} 
+
+ 
+
+button:active { 
+    transform: translateY(0); 
+} 
+
+ 
+
+/* Chat display */ 
+
+.chat-display {
+    background-color: rgba(255, 255, 255, 0.05);
+    list-style-type: none;
+    max-height: 60vh;  /* ใช้ max-height ให้ขยายได้ */
+    width: 100%;
+    border-radius: var(--border-radius);
+    margin: 0 auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 8px; /* ✅ เพิ่มระยะห่างให้พอดีขึ้น */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow-y: auto; /* ✅ เปิดใช้งาน Scrollbar */
+    scroll-behavior: smooth;
+    min-height: 300px;
+    padding-bottom: 12px;
+}
+
+.chat-display li {
+    word-break: break-word; /* ✅ ป้องกันคำยาวเกินไป */
+    overflow-wrap: break-word; /* ✅ ให้ตัดคำอัตโนมัติ */
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+    padding: 10px 14px;
+}
+
+.welcome-container,
+.leave-container {
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    width: 100%;
+    min-height: 40px; 
+    padding: 8px 12px; 
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    margin: 0px 0 !important; /* ✅ ปรับระยะห่างให้คงที่ */
+    overflow-wrap: break-word;
+    word-break: break-word;
+
+    flex-shrink: 0; /* ✅ ป้องกันการบีบตัว */
+    max-width: 90%; /* ✅ ป้องกันการขยายกว้างเกินไป */
+    text-align: center; /* ✅ จัดข้อความให้อ่านง่ายขึ้น */
+}
+
+
+
+.post {
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
+    max-width: 75%;
+}
+
+ 
+
+@keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
+} 
+
+/* สไตล์สำหรับข้อความที่มาจากแอดมิน */ 
+
+.post--admin { 
+    align-self: flex-end; /* ชิดขวาของหน้าจอ */ 
+    max-width: 75%; /* กำหนดความกว้างสูงสุด */ 
+} 
+
+ 
+
+/* ส่วนหัวของข้อความแอดมิน */ 
+
+.post__header--admin { 
+    background-color: var(--admin-header-color) !important; /* สีเทาสำหรับแอดมิน */ 
+    color: white; 
+    border-radius: var(--border-radius) var(--border-radius) 0 0; 
+    padding: 8px 12px; 
+    font-weight: bold; 
+} 
+
+ 
+
+/* ข้อความของแอดมิน */ 
+
+.post--admin .post__text { 
+    background-color: white; /* พื้นหลังของข้อความเป็นสีขาว */ 
+    color: #4A5568; /* สีของตัวอักษร */ 
+    padding: 12px 16px; 
+    border-radius: 0 0 var(--border-radius) var(--border-radius); 
+    border: 2px solid #4A5568; /* กรอบสีเดียวกันกับ header */ 
+} 
+
+ 
+
+ 
+
+.post--left { 
+    align-self: flex-end; 
+} 
+
+ 
+
+.admin--left { 
+    align-self: flex-end; 
+} 
+
+ 
+
+.post--right { 
+    align-self: flex-start; 
+} 
+
+ 
+
+.post--center { 
+    align-self: center; 
+} 
+
+ 
+
+.post__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* ทำให้ชื่อกับเวลาชิดขอบ */
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    gap: 40px; /* ป้องกันการทับกัน */
+    flex-wrap: nowrap; /* ป้องกันการขึ้นบรรทัดใหม่ */
+}
+
+.post__header--name {
+    font-weight: bold;
+    flex-grow: 1; /* ให้ชื่อผู้ใช้ขยายได้ */
+    white-space: nowrap; /* ป้องกันการขึ้นบรรทัดใหม่ */
+    overflow: hidden; /* ซ่อนข้อความส่วนเกิน */
+    text-overflow: ellipsis; /* แสดง ... หากข้อความยาวเกินไป */
+    max-width: 70%; /* จำกัดความกว้างของชื่อ */
+}
+
+.post__header--time {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    white-space: nowrap; /* ป้องกันเวลาขึ้นบรรทัดใหม่ */
+}
+
+ 
+
+.post__header--user { 
+    background-color: var(--sender-header-color); /* สีม่วง */ 
+    color: white; 
+    border-radius: var(--border-radius) var(--border-radius) 0 0; 
+    padding: 8px 12px; 
+    font-weight: bold; 
+} 
+
+ 
+
+/* ส่วนหัวของข้อความผู้ใช้คนอื่น */ 
+
+.post__header--reply { 
+    background-color: var(--reciever-header-color); /* สีแดง */ 
+    color: white; 
+    border-radius: var(--border-radius) var(--border-radius) 0 0; 
+} 
+
+ 
+
+.post__header--name { 
+    font-weight: bold; 
+} 
+
+.post__header--time { 
+    font-size: 0.75rem; 
+    opacity: 0.8; 
+} 
+
+ 
+
+.post__text { 
+    padding: 12px 16px; 
+    border-radius: 0 0 var(--border-radius) var(--border-radius); 
+} 
+
+ 
+
+.post--left .post__text { 
+    background-color: var(--recieve-color); 
+    color: var(--text-dark); 
+} 
+
+ 
+
+.post--right .post__text { 
+    background-color: white;  /* ส่วนข้อความของผู้ส่งเป็นสีขาว */ 
+    color: var(--text-dark);  /* เปลี่ยนสีตัวอักษรเป็นสีเข้มเพื่อให้อ่านง่ายบนพื้นหลังสีขาว */ 
+} 
+
+ 
+
+
+.user-list, .room-list, .activity { 
+    width: 100%; 
+    margin: 8px auto; 
+    padding: 12px; 
+    background-color: rgba(255, 255, 255, 0.05); 
+    border-radius: var(--border-radius); 
+    font-size: 0.9rem; 
+} 
+
+ 
+
+.user-list, .room-list { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 8px; 
+} 
+
+ 
+
+.user-badge, .room-badge { 
+    background-color: rgba(255, 255, 255, 0.1); 
+    padding: 4px 12px; 
+    border-radius: 20px; 
+    font-size: 0.85rem; 
+} 
+
+ 
+
+.activity { 
+    font-style: italic; 
+    color: rgba(255, 255, 255, 0.7); 
+    min-height: 24px; 
+} 
+
+ 
+
+/* Responsive design */ 
+@media (max-width: 600px) { 
+
+    main { 
+        padding: 0.5rem; 
+    } 
+
+     
+
+    input, button { 
+        font-size: 0.9rem; 
+        padding: 10px; 
+    } 
+
+     
+.post {
+    display: flex;
+    max-width: 80%;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 10px;
+}
+
+} 
+
+.post:not(.post--left):not(.post--right) { 
+    align-self: center; 
+    background-color: var(--admin-msg-color); 
+} 
+
+ 
+
+.welcome-container { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; /* จัดให้อยู่ตรงกลางแนวตั้ง */ 
+    width: 100%; 
+    min-height: 10px; /* กำหนดความสูงขั้นต่ำเพื่อให้มันอยู่กลาง */ 
+    background-color: transparent; /* ให้กลืนไปกับ chat-display */ 
+} 
+
+ 
+
+.welcome-time { 
+    display: block; /* ให้เวลาอยู่บรรทัดบน */ 
+    font-size: 0.75rem; 
+    opacity: 0.8; /* ทำให้สีจางลงเล็กน้อย */ 
+    margin-bottom: 0px; /* ลดระยะห่างจากข้อความ */ 
+} 
+
+ 
+
+.welcome-msg { 
+    display: block; /* ให้ข้อความอยู่บรรทัดล่าง */ 
+    font-size: 0.75rem; 
+    font-weight: normal; 
+    opacity: 0.8; /* ทำให้สีจางลงเล็กน้อย */ 
+    color: var(--text-light); /* ใช้สีข้อความหลัก */ 
+
+} 
+
+ 
+
+.leave-container { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; /* จัดให้อยู่ตรงกลางแนวตั้ง */ 
+    width: 100%; 
+    min-height: 10px; /* กำหนดความสูงขั้นต่ำเพื่อให้มันอยู่กลาง */ 
+    background-color: transparent; /* ให้กลืนไปกับ chat-display */ 
+    opacity: 0.8; 
+
+} 
+
+ 
+
+.leave-time { 
+    display: block; /* ให้เวลาอยู่บรรทัดบน */ 
+    font-size: 0.75rem; 
+    margin-bottom: 0px; /* ลดระยะห่างจากข้อความ */ 
+
+} 
+
+ 
+
+.leave-msg { 
+    display: block; /* ให้ข้อความอยู่บรรทัดล่าง */ 
+    font-size: 0.75rem; 
+    font-weight: normal;
+    color: var(--text-light); /* ใช้สีข้อความหลัก */ 
+
+} 
+
+.user-container {
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column; /* ✅ จัดให้แต่ละบรรทัดแยกจากกัน */
+    width: fit-content;
+}
+
+.amount-label {
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.users-row {
+    display: flex; /* ✅ ใช้ Flexbox จัดเรียงให้ Label และ User Span อยู่แนวเดียวกัน */
+    align-items: center;
+    flex-wrap: wrap; /* ✅ ป้องกันข้อความยาวเกิน */
+    gap: 8px; /* ระยะห่างระหว่างแต่ละ user */
+}
+
+.label {
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.user {
+    background-color: #4a5568;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    display: inline-block;
+}
+/* ✅ กรอบของ Active Room */
+.room-container {
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column; /* ✅ จัดให้แต่ละบรรทัดแยกจากกัน */
+    width: fit-content;
+}
+
+/* ✅ ข้อความจำนวนห้อง */
+.room-amount-label {
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* ✅ กล่องสำหรับเรียงรายชื่อห้อง */
+.rooms-row {
+    display: flex; /* ✅ ใช้ Flexbox จัดเรียง */
+    align-items: center;
+    flex-wrap: wrap; /* ✅ ป้องกันข้อความยาวเกิน */
+    gap: 8px; /* ✅ ช่องว่างระหว่างห้อง */
+}
+
+/* ✅ Label "Active Room :" */
+.room-label {
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* ✅ กรอบของห้อง */
+.room {
+    background-color: #4a5568;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    display: inline-block;
+}
+
+button.send {
+    background-color: #27704f; /* สีเขียว */
+}
+
+button.send:hover {
+    background-color: #4eac7d; /* สีเขียวเข้มเมื่อ hover */
+}
+
+button.send:active {
+    background-color: #2c7252; /* สีเขียวเข้มมากขึ้นเมื่อคลิก */
+}
+
+button.leave {
+    background-color: #c53030; /* สีแดง */
+}
+
+button.leave:hover {
+    background-color: #c05a5a; /* สีแดงเข้มเมื่อ hover */
+}
+
+button.leave:active {
+    background-color: #9b2c2c; /* สีแดงเข้มมากขึ้นเมื่อคลิก */
+}
