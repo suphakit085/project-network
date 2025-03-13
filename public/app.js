@@ -1,4 +1,4 @@
-const socket = io(window.location.origin);
+const socket = io(window.location.origin.replace('https://', 'http://'));
 
 const msginput = document.querySelector('#message');
 const nameinput = document.querySelector('#name');
