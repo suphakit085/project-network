@@ -1,4 +1,4 @@
-const socket = io('http://localhost:3500') 
+const socket = io(window.location.origin)
 
  
 

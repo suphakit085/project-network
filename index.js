@@ -51,13 +51,11 @@ const UsersState = {
  
 
 const io = new Server(expressServer, { 
-
     cors: { 
-
-        origin: ["http://localhost:3000", "http://localhost:5500", "http://127.0.0.1:5500"] 
-
+        origin: "*" // อนุญาตทุก origin ในช่วงการพัฒนา
+        // หรือระบุโดเมนที่อนุญาตเท่านั้น เช่น
+        // origin: ["https://yourdomainname.com", "https://www.yourdomainname.com"] 
     } 
-
 }) 
 
  
