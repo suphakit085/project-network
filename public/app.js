@@ -1,3 +1,4 @@
+
 const socket = io(window.location.origin);
 
 const msginput = document.querySelector('#message');
@@ -15,7 +16,19 @@ function sendMessage(e) {
     const roomName = chatRoom.value.trim();
 
     if (!userName || !messageText || !roomName) {
-        alert("Text can't be Empty");
+        // เปลี่ยนจาก alert ธรรมดา เป็นการแสดง toast notification แบบเดียวกับที่ใช้ใน errorMessage
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+        toast.textContent = "Text can't be Empty";
+        document.body.appendChild(toast);
+        
+        // ให้ toast หายไปหลังจาก 3 วินาที
+        setTimeout(() => {
+            toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 500);
+        }, 3000);
         return;
     }
 
