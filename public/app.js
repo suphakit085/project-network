@@ -1,20 +1,16 @@
-const socket = io(window.location.origin)
+const socket = io(window.location.origin);
 
- 
-
-const msginput = document.querySelector('#message') 
-const nameinput = document.querySelector('#name') 
-const chatRoom = document.querySelector('#room') 
-const activity = document.querySelector('.activity') 
-const usersList = document.querySelector('.user-list') 
-const roomList = document.querySelector('.room-list') 
-const chatDisplay = document.querySelector('.chat-display') 
-
- 
+const msginput = document.querySelector('#message');
+const nameinput = document.querySelector('#name');
+const chatRoom = document.querySelector('#room');
+const activity = document.querySelector('.activity');
+const usersList = document.querySelector('.user-list');
+const roomList = document.querySelector('.room-list');
+const chatDisplay = document.querySelector('.chat-display');
 
 function sendMessage(e) {
     e.preventDefault();
-    const messageText = msginput.value.trim(); // ลบช่องว่างหน้า-หลัง
+    const messageText = msginput.value.trim();
     const userName = nameinput.value.trim();
     const roomName = chatRoom.value.trim();
 
@@ -33,31 +29,32 @@ function sendMessage(e) {
     msginput.focus();
 }
 
+function enterRoom(e) {
+    e.preventDefault();
+    if (nameinput.value && chatRoom.value) {
+        socket.emit('enterRoom', {
+            name: nameinput.value,
+            room: chatRoom.value
+        });
+    }
+}
 
- 
-
-function enterRoom(e) { 
-
-    e.preventDefault() 
-
-    if (nameinput.value && chatRoom.value) { 
-
-        socket.emit('enterRoom', { 
-
-            name: nameinput.value, 
-
-            room: chatRoom.value 
-
-        }) 
-
-    } 
-    socket.on('errorMessage', (message) => {
-        alert(message);  // หรือคุณอาจจะเพิ่มการแสดงข้อความผิดพลาดใน UI ตามที่ต้องการ
-    });
+// เพิ่ม event listener สำหรับการรับข้อความข้อผิดพลาด
+socket.on('errorMessage', (message) => {
+    // สร้าง toast แจ้งเตือนแบบสวยงาม
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+    toast.textContent = message;
+    document.body.appendChild(toast);
     
-} 
-
-document.querySelector("#leaveBtn").addEventListener("click", leaveRoom);
+    // ให้ toast หายไปหลังจาก 3 วินาที
+    setTimeout(() => {
+        toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+        setTimeout(() => {
+            document.body.removeChild(toast);
+        }, 500);
+    }, 3000);
+});
 
 function leaveRoom() {
     const userName = nameinput.value;
@@ -67,289 +64,169 @@ function leaveRoom() {
 
     socket.emit("leaveRoom", { name: userName, room: roomName });
 
-    // ✅ แสดงข้อความออกจากห้องใน UI
-    const leaveMessage = document.createElement('div');
-    leaveMessage.className = 'leave-container';
-    
-    // ✅ ล้างประวัติการสนทนา
-    chatDisplay.innerHTML = "";  
-    chatDisplay.appendChild(leaveMessage);
+    // ล้างประวัติการสนทนา
+    chatDisplay.innerHTML = "";
 
-    // ✅ รีเซตรายการผู้ใช้
-    usersList.innerHTML = "";  
+    // รีเซตรายการผู้ใช้
+    usersList.innerHTML = "";
 
-    // ✅ ล้างค่าห้องและอินพุตข้อความ
+    // ล้างค่าห้องและอินพุตข้อความ
     chatRoom.value = "";
     msginput.value = "";
-
-    chatDisplay.scrollTop = chatDisplay.scrollHeight;
 }
 
+document.querySelector('.form-msg').addEventListener('submit', sendMessage);
+document.querySelector('.form-join').addEventListener('submit', enterRoom);
+document.querySelector("#leaveBtn").addEventListener("click", leaveRoom);
 
-
-document.querySelector('.form-msg') 
-    .addEventListener('submit', sendMessage) 
-
- 
-
-document.querySelector('.form-join') 
-    .addEventListener('submit', enterRoom) 
-
- 
-
-    msginput.addEventListener('keypress', () => { 
-        socket.emit('activity', nameinput.value); 
-    })
-
+msginput.addEventListener('keypress', () => {
+    socket.emit('activity', nameinput.value);
+});
 
 socket.on('message', (data) => {
     activity.textContent = '';
 
     const { name, text, time } = data;
-    const el = document.createElement('li');
-
-    // 🛠 กำหนด className ตามผู้ส่ง
-    if (name === nameinput.value) {
-        el.className = 'post post--left'; // ✅ ข้อความของคุณ → ชิดขวา
-    } else if (name !== 'Admin') {
-        el.className = 'post post--right'; // ✅ ข้อความจากผู้ใช้คนอื่น → ชิดซ้าย
-    }
-
-    if (name !== 'Admin') {
+    
+    // สร้าง element สำหรับข้อความ
+    const el = document.createElement('div');
+    
+    // ตรวจสอบว่าเป็นข้อความของตัวเองหรือไม่
+    if (name === 'Admin') {
+        // ข้อความของ Admin
+        el.className = 'flex justify-center';
         el.innerHTML = `
-            <div class="post__header ${name === nameinput.value ? 'post__header--user' : 'post__header--reply'}">
-                <span class="post__header--name">${name}</span>
-                <span class="post__header--time">${time}</span>
+            <div class="bg-gray-700 text-gray-200 px-4 py-2 rounded-full text-sm">
+                ${text}
             </div>
-            <div class="post__text">${text}</div>
+        `;
+    } else if (name === nameinput.value) {
+        // ข้อความของตัวเอง
+        el.className = 'flex justify-end mb-2';
+        el.innerHTML = `
+            <div class="max-w-xs lg:max-w-md">
+                <div class="bg-indigo-600 text-white px-4 py-2 rounded-t-lg rounded-bl-lg">
+                    ${text}
+                </div>
+                <div class="text-gray-400 text-xs mt-1 text-right">
+                    ${time}
+                </div>
+            </div>
         `;
     } else {
-        el.innerHTML = `<div class="post__text">${text}</div>`;
+        // ข้อความจากคนอื่น
+        el.className = 'flex justify-start mb-2';
+        el.innerHTML = `
+            <div class="max-w-xs lg:max-w-md">
+                <div class="flex items-center">
+                    <span class="text-gray-300 text-sm font-medium mr-2">${name}</span>
+                </div>
+                <div class="bg-gray-700 text-white px-4 py-2 rounded-t-lg rounded-br-lg">
+                    ${text}
+                </div>
+                <div class="text-gray-400 text-xs mt-1">
+                    ${time}
+                </div>
+            </div>
+        `;
     }
 
     chatDisplay.appendChild(el);
     chatDisplay.scrollTop = chatDisplay.scrollHeight;
-}) 
+});
 
- 
+socket.on('userList', ({ users }) => {
+    showUsers(users);
+});
 
- 
-
-socket.on('userList', ({ users }) => { 
-
-    showUsers(users) 
-
-}) 
-
-socket.on('roomList', ({ rooms }) => { 
-
-    showRooms(rooms) 
-
-}) 
-
- 
+socket.on('roomList', ({ rooms }) => {
+    showRooms(rooms);
+});
 
 function showUsers(users) {
-    usersList.innerHTML = ''; // ล้างค่าก่อน
+    usersList.innerHTML = '';
 
     if (users.length > 0) {
-        const container = document.createElement('div');
-        container.className = "user-container";
+        // สร้างหัวข้อรายการ
+        const header = document.createElement('div');
+        header.className = 'text-indigo-300 font-bold mb-2';
+        header.innerHTML = `Users in ${chatRoom.value} <span class="bg-indigo-600 text-white rounded-full px-2 py-0.5 text-xs ml-1">${users.length}</span>`;
+        usersList.appendChild(header);
 
-        // ✅ สร้างกล่องสำหรับ Amount
-        const amountLabel = document.createElement('div');
-        amountLabel.className = "amount-label";
-        amountLabel.textContent = `Amount : ${users.length}`;
-        container.appendChild(amountLabel);
-
-        // ✅ สร้างกล่องสำหรับ "Users in Room1"
-        const usersRow = document.createElement('div');
-        usersRow.className = "users-row"; // ใช้ Flexbox ควบคุม
-        container.appendChild(usersRow);
-
-        const label = document.createElement('span');
-        label.className = "label";
-        label.textContent = `Users in ${chatRoom.value} Room : `;
-        usersRow.appendChild(label);
-
-        // ✅ วนลูปสร้าง userSpan เพื่อให้เรียงต่อกัน
+        // สร้างรายการผู้ใช้
         users.forEach((user) => {
-            const userSpan = document.createElement('span');
-            userSpan.className = "user";
-            userSpan.textContent = user.name;
-            usersRow.appendChild(userSpan);
+            const userDiv = document.createElement('div');
+            userDiv.className = 'flex items-center mb-2 bg-gray-700 rounded-lg px-3 py-2';
+            userDiv.innerHTML = `
+                <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                <span class="truncate">${user.name}</span>
+            `;
+            usersList.appendChild(userDiv);
         });
-
-        usersList.appendChild(container);
+    } else {
+        usersList.innerHTML = '<div class="text-gray-500 text-center">No users in this room</div>';
     }
 }
-
-
- 
 
 function showRooms(rooms) {
-    roomList.innerHTML = ''; // ล้างค่าก่อน
+    roomList.innerHTML = '';
 
     if (rooms.length > 0) {
-        const container = document.createElement('div');
-        container.className = "room-container";
+        // สร้างหัวข้อรายการ
+        const header = document.createElement('div');
+        header.className = 'text-indigo-300 font-bold mb-2';
+        header.innerHTML = `Active Rooms <span class="bg-indigo-600 text-white rounded-full px-2 py-0.5 text-xs ml-1">${rooms.length}</span>`;
+        roomList.appendChild(header);
 
-        // ✅ สร้าง Label สำหรับจำนวนห้อง
-        const amountLabel = document.createElement('div');
-        amountLabel.className = "room-amount-label";
-        amountLabel.textContent = `Active Rooms : ${rooms.length}`;
-        container.appendChild(amountLabel);
-
-        // ✅ สร้างกล่องเก็บรายชื่อห้อง
-        const roomsRow = document.createElement('div');
-        roomsRow.className = "rooms-row"; // ใช้ Flexbox ให้เรียงต่อกัน
-        container.appendChild(roomsRow);
-
-        // ✅ สร้าง Label "Active Room :"
-        const label = document.createElement('span');
-        label.className = "room-label";
-        label.textContent = "Rooms : ";
-        roomsRow.appendChild(label);
-
-        // ✅ วนลูปเพิ่มรายชื่อห้อง
+        // สร้างรายการห้อง
+        const roomsContainer = document.createElement('div');
+        roomsContainer.className = 'flex flex-wrap gap-2';
+        
         rooms.forEach((room) => {
-            const roomSpan = document.createElement('span');
-            roomSpan.className = "room";
-            roomSpan.textContent = room;
-            roomsRow.appendChild(roomSpan);
+            const roomDiv = document.createElement('div');
+            roomDiv.className = 'bg-gray-700 text-sm rounded-lg px-3 py-1';
+            roomDiv.textContent = room;
+            roomsContainer.appendChild(roomDiv);
         });
-
-        roomList.appendChild(container);
+        
+        roomList.appendChild(roomsContainer);
+    } else {
+        roomList.innerHTML = '<div class="text-gray-500 text-center">No active rooms</div>';
     }
 }
 
-
- 
-
-function buildMsg(name, text, isAdmin = false) { 
-
-    return { 
-
-      name: isAdmin ? undefined : name, // ถ้าเป็นแอดมิน ไม่ต้องใส่ name (หรือจะใส่ "admin" ก็ได้) 
-
-      text, 
-
-      isAdmin, 
-
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
-
-    }; 
-
-  } 
-
-   
-
-  let hasDisplayedWelcomeMessage = false; // ตัวแปรเพื่อป้องกันการแสดงข้อความซ้ำ 
-
- 
-
-  socket.on('welcomeMessage', (data) => { 
-
-    const { text, time } = data; 
-
-    const chatDisplay = document.querySelector('.chat-display'); // ดึง chat-display มาใช้งาน 
-
-   
-
-    // ตรวจสอบว่าเคยแสดงข้อความนี้ไปแล้วหรือยัง 
-
-    if (hasDisplayedWelcomeMessage) return; 
-
-   
-
-    const el = document.createElement('div'); 
-
-    el.className = 'welcome-container'; 
-
-    el.innerHTML = `<span class="welcome-time">${time}</span> 
-
-                    <span class="welcome-msg">${text}</span>`; 
-
-   
-
-    // ตั้งค่าให้ป้องกันไม่ให้แสดงข้อความซ้ำ 
-
-    hasDisplayedWelcomeMessage = true; 
-
-  }); 
-
-   
-
- 
-
-  socket.on('welcomeMessage', (data) => { 
-
-    const { text, time } = data; 
-
-    const chatDisplay = document.querySelector('.chat-display'); // ดึง chat-display มาใช้งาน 
-
-   
-
-    const el = document.createElement('div'); 
-
-    el.className = 'welcome-container'; // ใช้คลาสนี้เพื่อจัดตำแหน่ง 
-
-    el.innerHTML = `<span class="welcome-time">${time}</span> 
-
-                    <span class="welcome-msg">${text}</span>`; 
-
-   
-
-    // หน่วงเวลา 370ms เพื่อให้แสดงข้อความหลังจากข้อความเก่า 
-
-    setTimeout(() => { 
-
-      chatDisplay.appendChild(el); // ใช้ appendChild แทน prepend เพื่อให้ข้อความใหม่ไปอยู่ท้ายสุด 
-
-    }, 370); 
-
- 
-
-    // เลื่อนลงไปที่ข้อความล่าสุด 
-
-    chatDisplay.scrollTop = chatDisplay.scrollHeight; 
-
-}); 
-
- 
-
-socket.on('leaveRoomMessage', (data) => { 
-
-    const { text, time } = data; 
-
-    const chatDisplay = document.querySelector('.chat-display'); // ดึง chat-display มาใช้งาน 
-
- 
-
-    // สร้าง element สำหรับการแสดงข้อความ 
-
-    const el = document.createElement('div'); 
-
-    el.className = 'leave-container';  
-
-    el.innerHTML = `<span class="leave-time">${time}</span> 
-
-                    <span class="leave-msg">${text}</span>`; 
-
-   
-
-    // หน่วงเวลา 370ms เพื่อให้แสดงข้อความหลังจากข้อความเก่า 
-
-    setTimeout(() => { 
-
-      chatDisplay.appendChild(el); // ใช้ appendChild แทน prepend เพื่อให้ข้อความใหม่ไปอยู่ท้ายสุด 
-
-    }, 370); 
-
- 
-
-    // เลื่อนลงไปที่ข้อความล่าสุด 
-
-    chatDisplay.scrollTop = chatDisplay.scrollHeight; 
-
-}); 
+// Handler สำหรับ welcomeMessage
+socket.on('welcomeMessage', (data) => {
+    const { text, time } = data;
+    
+    const el = document.createElement('div');
+    el.className = 'flex justify-center my-2';
+    el.innerHTML = `
+        <div class="bg-indigo-900/50 text-indigo-200 px-4 py-2 rounded-full text-sm">
+            ${text}
+        </div>
+    `;
+    
+    setTimeout(() => {
+        chatDisplay.appendChild(el);
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }, 300);
+});
+
+// Handler สำหรับ leaveRoomMessage
+socket.on('leaveRoomMessage', (data) => {
+    const { text, time } = data;
+    
+    const el = document.createElement('div');
+    el.className = 'flex justify-center my-2';
+    el.innerHTML = `
+        <div class="bg-red-900/50 text-red-200 px-4 py-2 rounded-full text-sm">
+            ${text}
+        </div>
+    `;
+    
+    setTimeout(() => {
+        chatDisplay.appendChild(el);
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }, 300);
+});
