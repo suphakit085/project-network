@@ -150,7 +150,10 @@ function showUsers(users) {
         // สร้างหัวข้อรายการ
         const header = document.createElement('div');
         header.className = 'text-indigo-300 font-bold mb-2';
-        header.innerHTML = `Users in ${chatRoom.value} <span class="bg-indigo-600 text-white rounded-full px-2 py-0.5 text-xs ml-1">${users.length}</span>`;
+        
+        // เปลี่ยนจาก "Users in 1" เป็น "Users in room [ชื่อห้อง]"
+        header.innerHTML = `Users in room ${chatRoom.value} <span class="bg-indigo-600 text-white rounded-full px-2 py-0.5 text-xs ml-1">${users.length}</span>`;
+        
         usersList.appendChild(header);
 
         // สร้างรายการผู้ใช้
